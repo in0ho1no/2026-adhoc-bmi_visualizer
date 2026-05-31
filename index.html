@@ -245,6 +245,16 @@
       border-left: 2px solid var(--border2);
     }
 
+    .info-note {
+      font-size: 0.8rem;
+      color: var(--text2);
+      line-height: 1.7;
+    }
+
+    .info-note a {
+      color: var(--accent);
+    }
+
     footer {
       margin-top: 2rem;
       font-size: 0.72rem;
@@ -293,6 +303,11 @@
       </form>
     </section>
 
+    <section class="card info-note" aria-label="算出基準">
+      <p>・成人の標準指標となるBMI22を基準に算出</p>
+      <p>・詳細は<a href="https://kennet.mhlw.go.jp/information/information/food/e-02-001" target="_blank" rel="noopener noreferrer">リンク先</a>を参照</p>
+    </section>
+
     <section class="card" id="result-section" aria-live="polite" hidden>
       <div class="figure-wrap">
         <div class="figure-col">
@@ -301,9 +316,8 @@
         </div>
         <div class="stats-col">
           <div class="stat">
-            <div class="stat-label">標準体重 / BMI</div>
+            <div class="stat-label">標準体重</div>
             <div class="stat-main"><span id="std-weight-value">—</span><span class="unit">kg</span></div>
-            <div class="stat-sub" id="std-bmi">BMI —</div>
           </div>
           <div class="stat">
             <div class="stat-label">健康体重の範囲 / BMI</div>
@@ -409,7 +423,6 @@
       const maxWeight = (maxBMI * hm * hm).toFixed(1);
 
       stdWeightValue.textContent = stdWeight;
-      document.getElementById('std-bmi').textContent = 'BMI ' + stdBMI.toFixed(1);
       rangeWeightValue.textContent = minWeight + ' 〜 ' + maxWeight;
       document.getElementById('range-bmi').textContent = 'BMI ' + minBMI.toFixed(1) + ' 〜 ' + maxBMI.toFixed(1);
 
