@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="description" content="身長・性別・年齢から、厚生労働省基準の標準体重と e-Stat 平均値に基づく参考 BMI を表示するビジュアライザーです。入力内容はページ外に送信されません。">
+  <meta name="description" content="身長・性別・年齢から以下を表示するビジュアライザーです。厚生労働省基準の標準体重と e-Stat 平均値に基づく参考 BMI。入力内容はページ外に送信されません。">
   <meta name="color-scheme" content="light dark">
   <title>BMIビジュアライザー</title>
   <style>
@@ -298,7 +298,7 @@
 <body>
   <header>
     <h1>BMIビジュアライザー</h1>
-    <p>身長・性別・年齢を入力すると、厚生労働省基準の標準体重と、e-Stat 平均値に基づく参考的な平均体重・平均 BMI を表示します。<br>入力された情報はこのページ外に送信・保存されません。</p>
+    <p>身長・性別・年齢から以下を表示するビジュアライザーです。<br>≪厚生労働省基準の標準体重≫<br>≪e-Stat 平均値に基づく参考的な平均体重・平均 BMI≫<br>入力された情報はこのページ外に送信・保存されません。</p>
   </header>
 
   <main>
@@ -329,7 +329,7 @@
     <div id="result-section" class="result-stack" aria-live="polite" hidden>
       <section class="card">
         <h2 class="section-title">厚生労働省の情報に基づいた標準体重</h2>
-        <p class="section-copy">成人の標準指標となる BMI 22 を基準に、入力された値のうち身長のみを用いて算出しています。性別と年齢はこの段の計算には使用していません。</p>
+        <p class="section-copy">成人の標準指標となる BMI 22 を基準に、入力された値のうち身長のみを用いて算出します。<br>性別と年齢はこの段の計算には使用していません。</p>
         <p class="section-copy"><a class="source-link" href="https://kennet.mhlw.go.jp/information/information/food/e-02-001" target="_blank" rel="noopener noreferrer">厚生労働省 e-健康づくりネット「肥満と健康」</a></p>
 
         <div class="stats-grid">
@@ -365,7 +365,7 @@
 
       <section class="card">
         <h2 class="section-title">e-Stat の平均値に基づいた参考表示</h2>
-        <p class="section-copy">2019年 国民健康・栄養調査の平均値を用いた参考表示です。性別と年齢階級に対応する平均 BMI を求め、入力された身長に当てはめた平均体重を表示します。</p>
+        <p class="section-copy">2019年 国民健康・栄養調査の平均値を用いた参考表示です。<br>性別と年齢階級に対応する平均 BMI を求め、入力された身長に当てはめた平均体重を表示します。</p>
 
         <div class="stats-grid">
           <div class="stat">
@@ -401,7 +401,7 @@
   </main>
 
   <noscript>
-    <p class="card">このページは JavaScript を使用して BMI と体重範囲を計算します。ブラウザ設定で JavaScript を有効にしてください。</p>
+    <p class="card">このページは JavaScript を使用して BMI と体重範囲を計算します。<br>ブラウザ設定で JavaScript を有効にしてください。</p>
   </noscript>
 
   <footer>
