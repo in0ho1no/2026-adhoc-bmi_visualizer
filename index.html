@@ -3,9 +3,9 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="description" content="身長・性別・年齢から標準体重と健康体重の範囲を表示する BMI ビジュアライザーです。入力内容はページ外に送信されません。">
+  <meta name="description" content="身長・性別・年齢から、厚生労働省基準の標準体重と e-Stat 平均値に基づく参考 BMI を表示するビジュアライザーです。入力内容はページ外に送信されません。">
   <meta name="color-scheme" content="light dark">
-  <title>標準体重・BMIビジュアライザー</title>
+  <title>BMIビジュアライザー</title>
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
@@ -13,6 +13,7 @@
       --bg: #f7f6f3;
       --surface: #ffffff;
       --surface2: #f1efe8;
+      --surface3: #ece9e0;
       --border: rgba(0, 0, 0, 0.12);
       --border2: rgba(0, 0, 0, 0.25);
       --text: #1a1a1a;
@@ -29,6 +30,7 @@
         --bg: #1c1c1a;
         --surface: #2c2c2a;
         --surface2: #222220;
+        --surface3: #262623;
         --border: rgba(255, 255, 255, 0.12);
         --border2: rgba(255, 255, 255, 0.25);
         --text: #f0ece4;
@@ -53,7 +55,7 @@
     header {
       text-align: center;
       margin-bottom: 2rem;
-      max-width: 560px;
+      max-width: 640px;
     }
 
     header h1 {
@@ -65,14 +67,14 @@
     }
 
     header p {
-      font-size: 0.85rem;
+      font-size: 0.86rem;
       color: var(--text2);
-      line-height: 1.6;
+      line-height: 1.7;
     }
 
     main {
       width: 100%;
-      max-width: 560px;
+      max-width: 640px;
     }
 
     .card {
@@ -138,38 +140,42 @@
 
     [hidden] { display: none !important; }
 
-    .figure-wrap {
-      display: flex;
-      gap: 1.25rem;
-      align-items: flex-end;
-      margin-bottom: 1.25rem;
-    }
-
-    .figure-col {
+    .result-stack {
       display: flex;
       flex-direction: column;
-      align-items: center;
-      gap: 8px;
-      flex: 0 0 auto;
+      gap: 1rem;
     }
 
-    .figure-label {
-      font-size: 0.72rem;
-      color: var(--text3);
-      text-align: center;
+    .section-title {
+      font-size: 1rem;
+      margin-bottom: 0.55rem;
+      letter-spacing: -0.01em;
     }
 
-    .stats-col {
-      flex: 1;
-      display: flex;
-      flex-direction: column;
+    .section-copy {
+      font-size: 0.82rem;
+      color: var(--text2);
+      line-height: 1.75;
+      margin-bottom: 0.7rem;
+    }
+
+    .section-copy a,
+    .source-link {
+      color: var(--accent);
+    }
+
+    .stats-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
       gap: 10px;
+      margin-bottom: 1rem;
     }
 
     .stat {
       background: var(--surface2);
       border-radius: var(--radius-md);
       padding: 10px 12px;
+      min-height: 88px;
     }
 
     .stat-label {
@@ -194,7 +200,8 @@
     .stat-sub {
       font-size: 0.8rem;
       color: var(--text2);
-      margin-top: 2px;
+      margin-top: 4px;
+      line-height: 1.6;
     }
 
     .bmi-bar-wrap { margin-top: 0.25rem; }
@@ -237,45 +244,61 @@
       line-height: 1.4;
     }
 
+    .is-static .bmi-range-fill,
+    .is-static .bmi-marker {
+      display: none;
+    }
+
+    .range-guidance {
+      margin-top: 0.85rem;
+      display: grid;
+      gap: 6px;
+      font-size: 0.78rem;
+      color: var(--text2);
+      line-height: 1.6;
+    }
+
+    .range-guidance span {
+      background: var(--surface3);
+      border-radius: var(--radius-md);
+      padding: 8px 10px;
+    }
+
     .note {
       font-size: 0.78rem;
       color: var(--text2);
-      line-height: 1.7;
+      line-height: 1.75;
       padding: 10px 12px;
       border-left: 2px solid var(--border2);
-    }
-
-    .info-note {
-      font-size: 0.8rem;
-      color: var(--text2);
-      line-height: 1.7;
-    }
-
-    .info-note a {
-      color: var(--accent);
+      margin-top: 1rem;
     }
 
     footer {
       margin-top: 2rem;
-      font-size: 0.72rem;
+      font-size: 0.74rem;
       color: var(--text3);
       text-align: center;
-      max-width: 480px;
+      max-width: 560px;
       line-height: 1.7;
+    }
+
+    @media (max-width: 520px) {
+      .form-grid,
+      .stats-grid {
+        grid-template-columns: 1fr;
+      }
     }
 
     @media (max-width: 420px) {
       .form-grid { grid-template-columns: 1fr 1fr; }
       .form-grid .field:last-child { grid-column: span 2; }
-      .figure-wrap { flex-direction: column; align-items: center; }
-      .stats-col { width: 100%; }
     }
   </style>
 </head>
 <body>
   <header>
-    <h1>標準体重・BMIビジュアライザー</h1>
-    <p>身長・性別・年齢を入力すると、標準体重と健康体重の範囲を表示します。<br>入力された情報はこのページ外に送信・保存されません。</p>
+    <h1>BMIビジュアライザー</h1>
+    <p>身長・性別・年齢を入力すると、厚生労働省基準の標準体重と、e-Stat 平均値に基づく参考的な平均体重・平均 BMI を表示します。<br>入力された情報はこのページ外に送信・保存されません。</p>
   </header>
 
   <main>
@@ -303,46 +326,78 @@
       </form>
     </section>
 
-    <section class="card info-note" aria-label="算出基準">
-      <p>・成人の標準指標となるBMI22を基準に算出</p>
-      <p>・詳細は<a href="https://kennet.mhlw.go.jp/information/information/food/e-02-001" target="_blank" rel="noopener noreferrer">リンク先</a>を参照</p>
-    </section>
+    <div id="result-section" class="result-stack" aria-live="polite" hidden>
+      <section class="card">
+        <h2 class="section-title">厚生労働省の情報に基づいた標準体重</h2>
+        <p class="section-copy">成人の標準指標となる BMI 22 を基準に、入力された値のうち身長のみを用いて算出しています。性別と年齢はこの段の計算には使用していません。</p>
+        <p class="section-copy"><a class="source-link" href="https://kennet.mhlw.go.jp/information/information/food/e-02-001" target="_blank" rel="noopener noreferrer">厚生労働省 e-健康づくりネット「肥満と健康」</a></p>
 
-    <section class="card" id="result-section" aria-live="polite" hidden>
-      <div class="figure-wrap">
-        <div class="figure-col">
-          <svg id="figure-svg" width="90" height="160" viewBox="0 0 90 160" aria-hidden="true"></svg>
-          <div class="figure-label" id="fig-label">標準体型シルエット</div>
-        </div>
-        <div class="stats-col">
+        <div class="stats-grid">
           <div class="stat">
             <div class="stat-label">標準体重</div>
             <div class="stat-main"><span id="std-weight-value">—</span><span class="unit">kg</span></div>
           </div>
           <div class="stat">
-            <div class="stat-label">健康体重の範囲 / BMI</div>
-            <div class="stat-main"><span id="range-weight-value">—</span><span class="unit">kg</span></div>
-            <div class="stat-sub" id="range-bmi">BMI —</div>
+            <div class="stat-label">健康体重の範囲</div>
+            <div class="stat-main"><span id="std-range-value">—</span><span class="unit">kg</span></div>
           </div>
         </div>
-      </div>
 
-      <div class="bmi-bar-wrap">
-        <div class="bmi-bar-bg" aria-hidden="true">
-          <div class="bmi-range-fill" id="bmi-range-fill"></div>
-          <div class="bmi-marker" id="bmi-dot"></div>
+        <div class="bmi-bar-wrap is-static">
+          <div class="bmi-bar-bg" aria-hidden="true">
+            <div class="bmi-range-fill"></div>
+            <div class="bmi-marker"></div>
+          </div>
+          <div class="bmi-scale">
+            <span>15<br>低体重</span>
+            <span style="text-align: center">18.5</span>
+            <span style="text-align: center">22<br>標準</span>
+            <span style="text-align: center">25</span>
+            <span style="text-align: right">30<br>肥満</span>
+          </div>
         </div>
-        <div class="bmi-scale">
-          <span>15<br>低体重</span>
-          <span style="text-align: center">18.5</span>
-          <span style="text-align: center">22<br>標準</span>
-          <span style="text-align: center">25</span>
-          <span style="text-align: right">30<br>肥満</span>
-        </div>
-      </div>
 
-      <div class="note" id="health-note" style="margin-top: 1rem"></div>
-    </section>
+        <div class="range-guidance">
+          <span>20歳〜64歳: BMI 18.5〜24.9</span>
+          <span>65歳以上: BMI 21.5〜24.9</span>
+        </div>
+      </section>
+
+      <section class="card">
+        <h2 class="section-title">e-Stat の平均値に基づいた参考表示</h2>
+        <p class="section-copy">2019年 国民健康・栄養調査の平均値を用いた参考表示です。性別と年齢階級に対応する平均 BMI を求め、入力された身長に当てはめた平均体重を表示します。</p>
+
+        <div class="stats-grid">
+          <div class="stat">
+            <div class="stat-label">平均体重</div>
+            <div class="stat-main"><span id="avg-weight-value">—</span><span class="unit">kg</span></div>
+            <div class="stat-sub" id="avg-bmi">平均BMI —</div>
+          </div>
+          <div class="stat">
+            <div class="stat-label">参照した年齢階級</div>
+            <div class="stat-main" id="avg-age-band">—</div>
+            <div class="stat-sub" id="avg-source">平均身長 — / 平均体重 —</div>
+          </div>
+        </div>
+
+        <div class="bmi-bar-wrap">
+          <div class="bmi-bar-bg" aria-hidden="true">
+            <div class="bmi-range-fill" id="avg-range-fill"></div>
+            <div class="bmi-marker" id="avg-dot"></div>
+          </div>
+          <div class="bmi-scale">
+            <span>15<br>低体重</span>
+            <span style="text-align: center">18.5</span>
+            <span style="text-align: center">22<br>標準</span>
+            <span style="text-align: center">25</span>
+            <span style="text-align: right">30<br>肥満</span>
+          </div>
+        </div>
+
+        <div class="range-guidance" id="avg-guidance"></div>
+        <div class="note" id="avg-note"></div>
+      </section>
+    </div>
   </main>
 
   <noscript>
@@ -350,105 +405,121 @@
   </noscript>
 
   <footer>
-    ※ BMI 22 は日本肥満学会が定める標準値です。健康体重の範囲は BMI 18.5〜25.0 に基づきます。<br>
-    65歳以上の方には BMI 21.5〜24.9 が推奨されています（日本老年医学会）。<br>
     本ツールは参考情報の提供を目的としており、医療上のアドバイスに代わるものではありません。
   </footer>
 
   <script>
     const BMI_MIN_SCALE = 15;
     const BMI_MAX_SCALE = 30;
+    const ESTAT_DATA = [
+      { min: 15, max: 15, label: '15歳', male: { height: 169.3, weight: 59.2 }, female: { height: 159.2, weight: 51.2 } },
+      { min: 16, max: 16, label: '16歳', male: { height: 168.9, weight: 60.8 }, female: { height: 158.0, weight: 48.9 } },
+      { min: 17, max: 17, label: '17歳', male: { height: 171.5, weight: 64.0 }, female: { height: 158.4, weight: 52.6 } },
+      { min: 18, max: 18, label: '18歳', male: { height: 171.1, weight: 61.2 }, female: { height: 156.0, weight: 49.6 } },
+      { min: 19, max: 19, label: '19歳', male: { height: 170.4, weight: 60.6 }, female: { height: 156.7, weight: 48.7 } },
+      { min: 20, max: 20, label: '20歳', male: { height: 170.2, weight: 57.0 }, female: { height: 158.6, weight: 49.0 } },
+      { min: 21, max: 21, label: '21歳', male: { height: 168.7, weight: 64.8 }, female: { height: 158.7, weight: 54.6 } },
+      { min: 22, max: 22, label: '22歳', male: { height: 172.3, weight: 65.3 }, female: { height: 159.0, weight: 52.3 } },
+      { min: 23, max: 23, label: '23歳', male: { height: 171.6, weight: 72.7 }, female: { height: 155.9, weight: 51.3 } },
+      { min: 24, max: 24, label: '24歳', male: { height: 172.7, weight: 68.6 }, female: { height: 155.9, weight: 49.2 } },
+      { min: 25, max: 25, label: '25歳', male: { height: 171.3, weight: 63.6 }, female: { height: 156.9, weight: 52.4 } },
+      { min: 26, max: 29, label: '26歳-29歳', male: { height: 171.8, weight: 70.4 }, female: { height: 157.9, weight: 53.4 } },
+      { min: 30, max: 39, label: '30歳-39歳', male: { height: 171.5, weight: 70.0 }, female: { height: 158.2, weight: 54.3 } },
+      { min: 40, max: 49, label: '40歳-49歳', male: { height: 171.5, weight: 72.8 }, female: { height: 158.1, weight: 55.6 } },
+      { min: 50, max: 59, label: '50歳-59歳', male: { height: 169.9, weight: 71.0 }, female: { height: 156.9, weight: 55.2 } },
+      { min: 60, max: 69, label: '60歳-69歳', male: { height: 167.4, weight: 67.3 }, female: { height: 154.0, weight: 54.7 } },
+      { min: 70, max: 120, label: '70歳以上', male: { height: 163.1, weight: 62.4 }, female: { height: 149.4, weight: 51.1 } }
+    ];
+
     const calcForm = document.getElementById('calc-form');
     const resultSection = document.getElementById('result-section');
     const stdWeightValue = document.getElementById('std-weight-value');
-    const rangeWeightValue = document.getElementById('range-weight-value');
+    const stdRangeValue = document.getElementById('std-range-value');
+    const avgWeightValue = document.getElementById('avg-weight-value');
+    const avgBmi = document.getElementById('avg-bmi');
+    const avgAgeBand = document.getElementById('avg-age-band');
+    const avgSource = document.getElementById('avg-source');
+    const avgRangeFill = document.getElementById('avg-range-fill');
+    const avgDot = document.getElementById('avg-dot');
+    const avgGuidance = document.getElementById('avg-guidance');
+    const avgNote = document.getElementById('avg-note');
 
     function bmiToPercent(bmi) {
       return Math.min(100, Math.max(0, (bmi - BMI_MIN_SCALE) / (BMI_MAX_SCALE - BMI_MIN_SCALE) * 100));
     }
 
-    function drawFigure(gender, heightCm) {
-      const svg = document.getElementById('figure-svg');
-      const isMale = gender === 'male';
-      const scale = heightCm / 170;
-      const headR = Math.round(12 * scale);
-      const cx = 45;
-      const headY = Math.round(headR + 4);
-      const neckH = Math.round(6 * scale);
-      const shoulderW = isMale ? Math.round(32 * scale) : Math.round(26 * scale);
-      const hipW = isMale ? Math.round(28 * scale) : Math.round(32 * scale);
-      const waistW = isMale ? Math.round(22 * scale) : Math.round(20 * scale);
-      const torsoTop = headY + headR + neckH;
-      const torsoH = Math.round(50 * scale);
-      const torsoBot = torsoTop + torsoH;
-      const legH = Math.round(64 * scale);
-      const legBot = torsoBot + legH;
-      const armH = Math.round(40 * scale);
-      const fill = isMale ? '#85B7EB' : '#F4C0D1';
-      const stroke = isMale ? '#185FA5' : '#993556';
+    function getAgeGroup(age) {
+      return ESTAT_DATA.find(function (group) {
+        return age >= group.min && age <= group.max;
+      });
+    }
 
-      svg.innerHTML = `
-        <circle cx="${cx}" cy="${headY}" r="${headR}" fill="${fill}" stroke="${stroke}" stroke-width="1.5"/>
-        <line x1="${cx}" y1="${headY + headR}" x2="${cx}" y2="${torsoTop}" stroke="${stroke}" stroke-width="3"/>
-        <path d="M${cx - shoulderW / 2},${torsoTop}
-                 Q${cx - waistW / 2},${torsoTop + torsoH * 0.45} ${cx - hipW / 2},${torsoBot}
-                 L${cx + hipW / 2},${torsoBot}
-                 Q${cx + waistW / 2},${torsoTop + torsoH * 0.45} ${cx + shoulderW / 2},${torsoTop} Z"
-              fill="${fill}" stroke="${stroke}" stroke-width="1.5"/>
-        <line x1="${cx - shoulderW / 2}" y1="${torsoTop + 4}" x2="${cx - shoulderW / 2 - 8}" y2="${torsoTop + armH}" stroke="${stroke}" stroke-width="3" stroke-linecap="round"/>
-        <line x1="${cx + shoulderW / 2}" y1="${torsoTop + 4}" x2="${cx + shoulderW / 2 + 8}" y2="${torsoTop + armH}" stroke="${stroke}" stroke-width="3" stroke-linecap="round"/>
-        <line x1="${cx - hipW / 4}" y1="${torsoBot}" x2="${cx - hipW / 4 - 4}" y2="${legBot}" stroke="${stroke}" stroke-width="4" stroke-linecap="round"/>
-        <line x1="${cx + hipW / 4}" y1="${torsoBot}" x2="${cx + hipW / 4 + 4}" y2="${legBot}" stroke="${stroke}" stroke-width="4" stroke-linecap="round"/>
-      `;
+    function getGuidanceRange(age) {
+      if (age >= 65) {
+        return { min: 21.5, max: 24.9, label: '65歳以上の目安帯: BMI 21.5〜24.9' };
+      }
+
+      return { min: 18.5, max: 24.9, label: '65歳未満の目安帯: BMI 18.5〜24.9' };
+    }
+
+    function calculateAverageMetrics(heightCm, gender, age) {
+      const group = getAgeGroup(age);
+      const source = group[gender];
+      const sourceBmi = source.weight / Math.pow(source.height / 100, 2);
+      const averageWeight = sourceBmi * Math.pow(heightCm / 100, 2);
+
+      return {
+        ageBand: group.label,
+        sourceHeight: source.height,
+        sourceWeight: source.weight,
+        averageBmi: sourceBmi,
+        averageWeight: averageWeight
+      };
+    }
+
+    function updateAverageBar(age, averageBmi) {
+      const guidance = getGuidanceRange(age);
+      const minPct = bmiToPercent(guidance.min).toFixed(1);
+      const rangePct = (bmiToPercent(guidance.max) - bmiToPercent(guidance.min)).toFixed(1);
+      const avgPct = bmiToPercent(averageBmi).toFixed(1);
+
+      avgRangeFill.style.left = minPct + '%';
+      avgRangeFill.style.width = rangePct + '%';
+      avgDot.style.left = avgPct + '%';
+
+      avgGuidance.innerHTML = '<span>' + guidance.label + '</span>';
     }
 
     function calculate() {
-      const heightInput = document.getElementById('height');
-      const ageInput = document.getElementById('age');
-      const height = parseFloat(heightInput.value);
+      const height = parseFloat(document.getElementById('height').value);
       const gender = document.getElementById('gender').value;
-      const age = parseInt(ageInput.value, 10);
+      const age = parseInt(document.getElementById('age').value, 10);
 
       if (!Number.isFinite(height) || !Number.isInteger(age) || height < 100 || height > 220 || age < 15 || age > 80) {
         resultSection.hidden = true;
         return;
       }
 
-      const hm = height / 100;
-      const stdBMI = 22;
-      const minBMI = 18.5;
-      const maxBMI = 25;
-      const stdWeight = (stdBMI * hm * hm).toFixed(1);
-      const minWeight = (minBMI * hm * hm).toFixed(1);
-      const maxWeight = (maxBMI * hm * hm).toFixed(1);
+      const heightM = height / 100;
+      const standardBmi = 22;
+      const healthMinBmi = 18.5;
+      const healthMaxBmi = 25;
+      const stdWeight = (standardBmi * heightM * heightM).toFixed(1);
+      const minWeight = (healthMinBmi * heightM * heightM).toFixed(1);
+      const maxWeight = (healthMaxBmi * heightM * heightM).toFixed(1);
+      const averageMetrics = calculateAverageMetrics(height, gender, age);
 
       stdWeightValue.textContent = stdWeight;
-      rangeWeightValue.textContent = minWeight + ' 〜 ' + maxWeight;
-      document.getElementById('range-bmi').textContent = 'BMI ' + minBMI.toFixed(1) + ' 〜 ' + maxBMI.toFixed(1);
+      stdRangeValue.textContent = minWeight + ' 〜 ' + maxWeight;
 
-      const stdPct = bmiToPercent(stdBMI).toFixed(1);
-      const minPct = bmiToPercent(minBMI).toFixed(1);
-      const rangePct = (bmiToPercent(maxBMI) - bmiToPercent(minBMI)).toFixed(1);
+      avgWeightValue.textContent = averageMetrics.averageWeight.toFixed(1);
+      avgBmi.textContent = '平均BMI ' + averageMetrics.averageBmi.toFixed(1);
+      avgAgeBand.textContent = averageMetrics.ageBand;
+      avgSource.textContent = '平均身長 ' + averageMetrics.sourceHeight.toFixed(1) + 'cm / 平均体重 ' + averageMetrics.sourceWeight.toFixed(1) + 'kg';
 
-      document.getElementById('bmi-dot').style.left = stdPct + '%';
-      const fill = document.getElementById('bmi-range-fill');
-      fill.style.left = minPct + '%';
-      fill.style.width = rangePct + '%';
+      updateAverageBar(age, averageMetrics.averageBmi);
 
-      drawFigure(gender, height);
-      document.getElementById('fig-label').textContent =
-        (gender === 'female' ? '女性' : '男性') + '・' + height + 'cm の標準シルエット';
-
-      let note = '';
-      if (age >= 65) {
-        note = '65歳以上の方には BMI 21.5〜24.9 が推奨されています（日本老年医学会ガイドライン）。体重が低すぎると筋肉量の減少や骨折リスクにつながることがあります。';
-      } else if (age < 18) {
-        note = '未成年の方の場合、成長段階によって適切な体重範囲が異なります。小児科医や学校医に相談することをおすすめします。';
-      } else {
-        note = 'BMI 22 は疾病リスクが最も低いとされる標準値です（日本肥満学会）。健康的な体重管理には食事・運動・睡眠のバランスが大切です。';
-      }
-
-      document.getElementById('health-note').textContent = note;
+      avgNote.textContent = 'この段は e-Stat の平均値に基づく参考表示です。骨量や筋肉量、体脂肪率、生活習慣によって適正な体格は十分に変化しうるため、平均値に過度に依存しないでください。';
       resultSection.hidden = false;
     }
 
