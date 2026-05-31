@@ -365,19 +365,19 @@
 
       <section class="card">
         <h2 class="section-title">e-Stat の平均値に基づいた参考表示</h2>
-        <p class="section-copy">2019年 国民健康・栄養調査の平均値を用いた参考表示です。<br>性別と年齢階級に対応する平均体重・平均 BMI をそのまま表示します。入力された身長はこの段の平均値計算には使用していません。</p>
+        <p class="section-copy">2019年 国民健康・栄養調査の平均値を用いた参考表示です。<br>性別と年齢階級に対応する平均 BMI をもとに、入力された身長へ当てはめた参考的な平均体重を算出して表示します。</p>
         <p class="section-copy"><a class="source-link" href="https://www.e-stat.go.jp/dbview?sid=0003224177" target="_blank" rel="noopener noreferrer">e-Stat 政府統計の総合窓口「国民健康・栄養調査 2019年 身長・体重の平均値及び標準偏差」</a></p>
 
         <div class="stats-grid">
           <div class="stat">
-            <div class="stat-label">平均体重</div>
+            <div class="stat-label">算出される平均体重</div>
             <div class="stat-main"><span id="avg-weight-value">—</span><span class="unit">kg</span></div>
-            <div class="stat-sub" id="avg-bmi">平均BMI —</div>
+            <div class="stat-sub">入力身長に平均 BMI を当てはめた参考値</div>
           </div>
           <div class="stat">
             <div class="stat-label">参照した年齢階級</div>
             <div class="stat-main" id="avg-age-band">—</div>
-            <div class="stat-sub" id="avg-source">平均身長 — / 平均体重 —</div>
+            <div class="stat-sub" id="avg-source">平均身長 —<br>平均体重 —<br>平均BMI —</div>
           </div>
         </div>
 
@@ -437,7 +437,6 @@
     const stdWeightValue = document.getElementById('std-weight-value');
     const stdRangeValue = document.getElementById('std-range-value');
     const avgWeightValue = document.getElementById('avg-weight-value');
-    const avgBmi = document.getElementById('avg-bmi');
     const avgAgeBand = document.getElementById('avg-age-band');
     const avgSource = document.getElementById('avg-source');
     const avgRangeFill = document.getElementById('avg-range-fill');
@@ -463,17 +462,18 @@
       return { min: 18.5, max: 24.9, label: '65歳未満の目安帯: BMI 18.5〜24.9' };
     }
 
-    function calculateAverageMetrics(gender, age) {
+    function calculateAverageMetrics(heightCm, gender, age) {
       const group = getAgeGroup(age);
       const source = group[gender];
       const sourceBmi = source.weight / Math.pow(source.height / 100, 2);
+      const averageWeight = sourceBmi * Math.pow(heightCm / 100, 2);
 
       return {
         ageBand: group.label,
         sourceHeight: source.height,
         sourceWeight: source.weight,
         averageBmi: sourceBmi,
-        averageWeight: source.weight
+        averageWeight: averageWeight
       };
     }
 
@@ -507,15 +507,14 @@
       const stdWeight = (standardBmi * heightM * heightM).toFixed(1);
       const minWeight = (healthMinBmi * heightM * heightM).toFixed(1);
       const maxWeight = (healthMaxBmi * heightM * heightM).toFixed(1);
-      const averageMetrics = calculateAverageMetrics(gender, age);
+      const averageMetrics = calculateAverageMetrics(height, gender, age);
 
       stdWeightValue.textContent = stdWeight;
       stdRangeValue.textContent = minWeight + ' 〜 ' + maxWeight;
 
       avgWeightValue.textContent = averageMetrics.averageWeight.toFixed(1);
-      avgBmi.textContent = '平均BMI ' + averageMetrics.averageBmi.toFixed(1);
       avgAgeBand.textContent = averageMetrics.ageBand;
-      avgSource.textContent = '平均身長 ' + averageMetrics.sourceHeight.toFixed(1) + 'cm / 平均体重 ' + averageMetrics.sourceWeight.toFixed(1) + 'kg';
+      avgSource.innerHTML = '平均身長 ' + averageMetrics.sourceHeight.toFixed(1) + 'cm<br>平均体重 ' + averageMetrics.sourceWeight.toFixed(1) + 'kg<br>平均BMI ' + averageMetrics.averageBmi.toFixed(1);
 
       updateAverageBar(age, averageMetrics.averageBmi);
 
