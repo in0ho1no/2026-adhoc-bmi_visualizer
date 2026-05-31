@@ -365,7 +365,8 @@
 
       <section class="card">
         <h2 class="section-title">e-Stat の平均値に基づいた参考表示</h2>
-        <p class="section-copy">2019年 国民健康・栄養調査の平均値を用いた参考表示です。<br>性別と年齢階級に対応する平均 BMI を求め、入力された身長に当てはめた平均体重を表示します。</p>
+        <p class="section-copy">2019年 国民健康・栄養調査の平均値を用いた参考表示です。<br>性別と年齢階級に対応する平均体重・平均 BMI をそのまま表示します。入力された身長はこの段の平均値計算には使用していません。</p>
+        <p class="section-copy"><a class="source-link" href="https://www.e-stat.go.jp/dbview?sid=0003224177" target="_blank" rel="noopener noreferrer">e-Stat 政府統計の総合窓口「国民健康・栄養調査 2019年 身長・体重の平均値及び標準偏差」</a></p>
 
         <div class="stats-grid">
           <div class="stat">
@@ -462,18 +463,17 @@
       return { min: 18.5, max: 24.9, label: '65歳未満の目安帯: BMI 18.5〜24.9' };
     }
 
-    function calculateAverageMetrics(heightCm, gender, age) {
+    function calculateAverageMetrics(gender, age) {
       const group = getAgeGroup(age);
       const source = group[gender];
       const sourceBmi = source.weight / Math.pow(source.height / 100, 2);
-      const averageWeight = sourceBmi * Math.pow(heightCm / 100, 2);
 
       return {
         ageBand: group.label,
         sourceHeight: source.height,
         sourceWeight: source.weight,
         averageBmi: sourceBmi,
-        averageWeight: averageWeight
+        averageWeight: source.weight
       };
     }
 
@@ -507,7 +507,7 @@
       const stdWeight = (standardBmi * heightM * heightM).toFixed(1);
       const minWeight = (healthMinBmi * heightM * heightM).toFixed(1);
       const maxWeight = (healthMaxBmi * heightM * heightM).toFixed(1);
-      const averageMetrics = calculateAverageMetrics(height, gender, age);
+      const averageMetrics = calculateAverageMetrics(gender, age);
 
       stdWeightValue.textContent = stdWeight;
       stdRangeValue.textContent = minWeight + ' 〜 ' + maxWeight;
